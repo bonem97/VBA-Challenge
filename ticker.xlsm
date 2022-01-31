@@ -1,0 +1,71 @@
+'NAME: ticker()
+'will return the ticker symbol for a given stock profile in the appropriate cell
+Sub ticker():
+    Dim ws As Worksheet
+       
+        'Dim
+        Dim lastrow As Double
+        Dim tickertype As Integer
+        Dim first_day As Double
+        Dim last_day As Double
+        Dim volume_sum As Double
+        
+        
+        
+    'accelerate processing
+    Application.ScreenUpdating = False
+    
+    'go through sheets - tempermental
+    For Each ws In Worksheets:
+        
+
+        ws.Cells(1, 9).Value = "Ticker"
+        ws.Cells(1, 10).Value = "Yearly Change"
+        ws.Cells(1, 11).Value = "Percent Change"
+        ws.Cells(1, 12).Value = "Total Stock Volume"
+ 
+        
+        'Set variable types
+        tickertype = 2
+        lastrow = ws.Cells(Rows.Count, "A").End(xlUp).Row
+        first_day = 2
+        last_day = 3
+        
+        MsgBox (lastrow)
+        
+        For i = 2 To lastrow:
+            'write something that just returns the different ticker symbols
+            '<> is the symbol for =/=
+            If ws.Cells(i, 1).Value <> ws.Cells(1 + i, 1).Value Then
+                'store variables for the opening day and final day of the stock
+                last_day = i
+                'set first iteration value of volume_sum
+                volume_sum = ws.Cells(first_day, 7).Value
+                'return ticker symbol
+                ws.Cells(tickertype, 9) = ws.Cells(i, 1).Value
+                'return change in value
+                ws.Cells(tickertype, 10) = (ws.Cells(last_day, 6).Value - ws.Cells(first_day, 3).Value)
+                    'conditional formatting
+                    If ws.Cells(tickertype, 10).Value < 0 Then
+                        ws.Cells(tickertype, 10).Interior.ColorIndex = 3
+                    ElseIf ws.Cells(tickertype, 10) >= 0 Then
+                        ws.Cells(tickertype, 10).Interior.ColorIndex = 4
+                    End If
+                'return percent of change
+                ws.Cells(tickertype, 11) = ws.Cells(tickertype, 10).Value / ws.Cells(first_day, 3).Value
+                'use for loop to sum the total the stock volume
+                For j = first_day To last_day
+                    'volume sum repeat
+                    volume_sum = volume_sum + ws.Cells(j, 7)
+                Next j
+                ws.Cells(tickertype, 12) = volume_sum
+                tickertype = tickertype + 1
+                'change the first_day to be the entry after previous last-day
+                first_day = last_day + 1
+            End If
+        Next i
+    Next ws
+    'allow updates to show
+    Application.ScreenUpdating = True
+End Sub
+
